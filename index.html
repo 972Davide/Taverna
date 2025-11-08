@@ -1,8 +1,48 @@
 <!DOCTYPE html>
-<html>
-<head><meta charset="UTF-8"><title>Langini Meteo</title></head>
-<body style="font-family:sans-serif;text-align:center">
-<h1>Langini Meteo</h1>
-<p>Benvenuto! GitHub Pages è attivo.</p>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Langini Meteo – Dashboard Online</title>
+<style>
+body{
+  font-family:sans-serif;text-align:center;
+  background:linear-gradient(to bottom,#001b3a,#004a8d);
+  color:white;margin:0;padding:0
+}
+.card{
+  background:rgba(255,255,255,0.1);
+  border-radius:12px;
+  padding:16px;margin:20px auto;
+  max-width:340px;
+  box-shadow:0 0 10px rgba(0,0,0,0.3)
+}
+h1{color:#ffcc00;margin-top:20px}
+p{margin:6px 0;font-size:1.2em}
+small{opacity:.8}
+</style>
+</head>
+<body>
+<h1>🌦️ Langini Meteo – Online</h1>
+<div id="dati" class="card">Caricamento...</div>
+<small>Aggiornamento automatico ogni 5 s</small>
+
+<script>
+async function aggiorna(){
+  try{
+    const r = await fetch("data.json?nocache="+Date.now());
+    const d = await r.json();
+    document.getElementById("dati").innerHTML =
+      `<p>🌡️ Temperatura: <b>${d.temperatura.toFixed(1)} °C</b></p>
+       <p>💧 Umidità: <b>${d.umidita.toFixed(1)} %</b></p>
+       <p>🧪 MQ7: <b>${d.mq7_raw}</b>  (${d.volt.toFixed(2)} V)</p>
+       <p>⏱️ Ultimo aggiornamento:<br>${new Date(d.timestamp).toLocaleString()}</p>`;
+  }catch(e){
+    document.getElementById("dati").innerHTML =
+      "⚠️ Nessun dato disponibile<br>(data.json non trovato)";
+  }
+}
+aggiorna(); setInterval(aggiorna,5000);
+</script>
 </body>
 </html>
