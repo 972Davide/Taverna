@@ -30,7 +30,7 @@ small{opacity:.8}
 <script>
 async function aggiorna(){
   try{
-    const r = await fetch("data.json?nocache="+Date.now());
+    const r = await fetch("https://raw.githubusercontent.com/972Davide/Taverna/main/data.json?nocache="+Date.now());
     const d = await r.json();
     document.getElementById("dati").innerHTML =
       `<p>🌡️ Temperatura: <b>${d.temperatura.toFixed(1)} °C</b></p>
