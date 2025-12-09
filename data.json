@@ -1,7 +1,1 @@
-{
-  "temperatura": 0,
-  "umidita": 0,
-  "mq7_raw": 0,
-  "volt": 0,
-  "timestamp": "init"
-}
+{"temperatura":16.6,"umidita":57.6,"mq7_raw":759,"volt":0.611648,"timestamp":"30s"}
