@@ -58,38 +58,3 @@ aggiorna();
 
 </body>
 </html>
-</head>
-<body>
-
-<h2>Langini Meteo – Taverna (Smartphone)</h2>
-
-<div id="temp" class="card">Temperatura: -- °C</div>
-<div id="hum" class="card">Umidità: -- %</div>
-<div id="mq7" class="card">MQ7 RAW: --</div>
-<div id="volt" class="card">Volt: --</div>
-<div id="ts" class="card">Aggiornamento: --</div>
-
-<script>
-async function aggiorna() {
-  try {
-    const url = "https://raw.githubusercontent.com/972Davide/Taverna/main/data.json";
-    const r = await fetch(url + "?v=" + Date.now());
-    const d = await r.json();
-
-    document.getElementById("temp").innerHTML = "Temperatura: " + d.temperatura + " °C";
-    document.getElementById("hum").innerHTML  = "Umidità: " + d.umidita + " %";
-    document.getElementById("mq7").innerHTML  = "MQ7 RAW: " + d.mq7_raw;
-    document.getElementById("volt").innerHTML = "Volt: " + d.volt;
-    document.getElementById("ts").innerHTML   = "Aggiornamento: " + d.timestamp;
-
-  } catch(e) {
-    document.getElementById("ts").innerHTML = "ERRORE LETTURA DATI";
-  }
-}
-
-setInterval(aggiorna, 4000);
-aggiorna();
-</script>
-
-</body>
-</html>
