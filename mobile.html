@@ -1,104 +1,79 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Langini Meteo – Mobile</title>
 
 <style>
-body{
-  margin:0;
-  background:#001b3a;
-  color:white;
-  font-family:sans-serif;
-  text-align:center;
+body {
+  background: #000814;
+  color: white;
+  font-family: system-ui, sans-serif;
+  padding: 20px;
+  text-align: center;
 }
-.card{
-  background:#012952;
-  margin:15px;
-  padding:20px;
-  border-radius:14px;
-  box-shadow:0 0 10px #0006;
+.box {
+  background: #00172d;
+  padding: 20px;
+  border-radius: 14px;
+  margin-bottom: 20px;
 }
-.val{
-  font-size:2.4em;
-  font-weight:bold;
+h1 {
+  font-size: 26px;
+  margin-bottom: 10px;
 }
-.desc{
-  opacity:.7;
-  font-size:.9em;
-  margin-bottom:10px;
+.label {
+  font-size: 18px;
+  color: #7dd3fc;
 }
-#aria{
-  font-size:1.4em;
-  font-weight:bold;
-  margin-top:5px;
+.value {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 </style>
-
-<script>
-const channelID = "3182138";
-const apiKey    = "0HYI1RR8TO715ZSN";
-
-function aggiorna(){
-  fetch(`https://api.thingspeak.com/channels/${channelID}/feeds.json?api_key=${apiKey}&results=1`)
-    .then(r => r.json())
-    .then(d => {
-      let f = d.feeds[0];
-
-      let temp = parseFloat(f.field1);
-      let hum  = parseFloat(f.field2);
-      let mq7  = parseFloat(f.field3);
-      let volt = parseFloat(f.field4);
-
-      document.getElementById("temp").textContent = temp.toFixed(1)+" °C";
-      document.getElementById("hum").textContent  = hum.toFixed(1)+" %";
-      document.getElementById("mq7").textContent  = mq7.toFixed(0);
-      document.getElementById("volt").textContent = volt.toFixed(2)+" V";
-
-      // Qualità aria
-      let stato = "—";
-      let col = "white";
-      if(volt < 0.30){ stato="Ottima"; col="lime"; }
-      else if(volt < 0.80){ stato="Buona"; col="yellow"; }
-      else if(volt < 1.60){ stato="Scarsa"; col="orange"; }
-      else { stato="Pericolosa"; col="red"; }
-      
-      document.getElementById("aria").textContent = stato;
-      document.getElementById("aria").style.color = col;
-    });
-}
-
-setInterval(aggiorna, 5000);
-window.onload = aggiorna;
-</script>
 
 </head>
 <body>
 
-<h2>🌐 Langini Meteo – Mobile</h2>
+<h1>🌡️ Langini Meteo – Mobile</h1>
 
-<div class="card">
-  <div class="desc">Temperatura</div>
-  <div id="temp" class="val">--</div>
-</div>
+<div id="contenuto" class="box">Caricamento...</div>
 
-<div class="card">
-  <div class="desc">Umidità</div>
-  <div id="hum" class="val">--</div>
-</div>
+<script>
+async function aggiorna() {
+  const url = "https://raw.githubusercontent.com/972Davide/Taverna/main/dataA.json";
 
-<div class="card">
-  <div class="desc">MQ7 (Raw)</div>
-  <div id="mq7" class="val">--</div>
-</div>
+  try {
+    const r = await fetch(url + "?nocache=" + Date.now());
+    const d = await r.json();
 
-<div class="card">
-  <div class="desc">Volt MQ7</div>
-  <div id="volt" class="val">--</div>
-  <div id="aria">--</div>
-</div>
+    document.getElementById("contenuto").innerHTML = `
+      <div class="label">Temperatura</div>
+      <div class="value">${d.temperatura} °C</div>
 
-<p style="opacity:.6;font-size:.8em;">Aggiornamento ogni 5 secondi</p>
+      <div class="label">Umidità</div>
+      <div class="value">${d.umidita} %</div>
+
+      <div class="label">MQ7 RAW</div>
+      <div class="value">${d.mq7_raw}</div>
+
+      <div class="label">Volt batteria</div>
+      <div class="value">${d.volt.toFixed(3)} V</div>
+
+      <div class="label">Aggiornato</div>
+      <div class="value">${d.timestamp}</div>
+    `;
+  } catch (e) {
+    document.getElementById("contenuto").innerHTML = "<b>Errore rete!</b>";
+  }
+}
+
+aggiorna();
+setInterval(aggiorna, 5000); // aggiorna ogni 5 secondi
+</script>
 
 </body>
 </html>
