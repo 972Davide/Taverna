@@ -1,142 +1,95 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Langini Meteo – Mobile</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Langini Meteo - Mobile</title>
 
-  <style>
-    * { box-sizing: border-box; margin:0; padding:0; }
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #000814;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
 
-    body {
-      background:#000814;
-      color:#f9fafb;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      padding:16px;
-    }
+.card {
+  background: #001b33;
+  padding: 15px;
+  border-radius: 12px;
+  margin: 15px 0;
+  font-size: 1.3rem;
+}
+</style>
 
-    .card {
-      background:#00172d;
-      border-radius:16px;
-      padding:18px;
-      margin-bottom:16px;
-      box-shadow:0 8px 18px rgba(0,0,0,0.45);
-    }
-
-    h1 {
-      font-size:24px;
-      margin-bottom:8px;
-      text-align:center;
-    }
-
-    .sub {
-      text-align:center;
-      font-size:12px;
-      color:#9ca3af;
-      margin-bottom:16px;
-    }
-
-    .row {
-      display:flex;
-      justify-content:space-between;
-      margin:8px 0;
-      align-items:baseline;
-    }
-
-    .label {
-      font-size:15px;
-      color:#7dd3fc;
-    }
-
-    .value {
-      font-size:20px;
-      font-weight:600;
-    }
-
-    .small {
-      font-size:13px;
-      color:#9ca3af;
-      margin-top:8px;
-      text-align:right;
-    }
-
-    #stato {
-      text-align:center;
-      font-size:13px;
-      margin-top:6px;
-      color:#9ca3af;
-    }
-
-    .errore {
-      color:#f87171;
-    }
-  </style>
 </head>
 <body>
 
-  <div class="card">
-    <h1>Langini Meteo</h1>
-    <div class="sub">ESP32 Taverna → GitHub data.json</div>
+<h2>Langini Meteo – Taverna (Smartphone)</h2>
 
-    <div id="dati">
-      Caricamento dati...
-    </div>
+<div id="temp" class="card">Temperatura: -- °C</div>
+<div id="hum" class="card">Umidità: -- %</div>
+<div id="mq7" class="card">MQ7 RAW: --</div>
+<div id="volt" class="card">Volt: --</div>
+<div id="ts" class="card">Aggiornamento: --</div>
 
-    <div id="stato"></div>
-  </div>
+<script>
+async function aggiorna() {
+  try {
+    const url = "https://raw.githubusercontent.com/972Davide/Taverna/main/data.json";
+    const r = await fetch(url + "?v=" + Date.now());
+    const d = await r.json();
 
-  <script>
-    const URL_GITHUB =
-      "https://raw.githubusercontent.com/972Davide/Taverna/main/data.json";
+    document.getElementById("temp").innerHTML = "Temperatura: " + d.temperatura + " °C";
+    document.getElementById("hum").innerHTML  = "Umidità: " + d.umidita + " %";
+    document.getElementById("mq7").innerHTML  = "MQ7 RAW: " + d.mq7_raw;
+    document.getElementById("volt").innerHTML = "Volt: " + d.volt;
+    document.getElementById("ts").innerHTML   = "Aggiornamento: " + d.timestamp;
 
-    async function aggiorna() {
-      const stato = document.getElementById("stato");
-      const box   = document.getElementById("dati");
-      try {
-        stato.textContent = "Aggiornamento in corso...";
-        // uso .text() così funziona anche se GitHub manda text/plain
-        const r = await fetch(URL_GITHUB + "?nocache=" + Date.now());
-        const txt = await r.text();
-        const d = JSON.parse(txt);
+  } catch(e) {
+    document.getElementById("ts").innerHTML = "ERRORE LETTURA DATI";
+  }
+}
 
-        box.innerHTML = `
-          <div class="row">
-            <div class="label">Temperatura</div>
-            <div class="value">${d.temperatura?.toFixed(1)} °C</div>
-          </div>
+setInterval(aggiorna, 4000);
+aggiorna();
+</script>
 
-          <div class="row">
-            <div class="label">Umidità</div>
-            <div class="value">${d.umidita?.toFixed(1)} %</div>
-          </div>
+</body>
+</html>
+</head>
+<body>
 
-          <div class="row">
-            <div class="label">MQ7 RAW</div>
-            <div class="value">${d.mq7_raw}</div>
-          </div>
+<h2>Langini Meteo – Taverna (Smartphone)</h2>
 
-          <div class="row">
-            <div class="label">Volt batteria</div>
-            <div class="value">${d.volt?.toFixed(3)} V</div>
-          </div>
+<div id="temp" class="card">Temperatura: -- °C</div>
+<div id="hum" class="card">Umidità: -- %</div>
+<div id="mq7" class="card">MQ7 RAW: --</div>
+<div id="volt" class="card">Volt: --</div>
+<div id="ts" class="card">Aggiornamento: --</div>
 
-          <div class="small">
-            Timestamp ESP: ${d.timestamp}s
-          </div>
-        `;
+<script>
+async function aggiorna() {
+  try {
+    const url = "https://raw.githubusercontent.com/972Davide/Taverna/main/data.json";
+    const r = await fetch(url + "?v=" + Date.now());
+    const d = await r.json();
 
-        const ora = new Date();
-        stato.textContent = "Ultimo aggiornamento: " +
-          ora.toLocaleTimeString();
-      } catch (e) {
-        box.innerHTML = `<div class="errore">Errore rete o JSON non valido</div>`;
-        stato.textContent = "";
-      }
-    }
+    document.getElementById("temp").innerHTML = "Temperatura: " + d.temperatura + " °C";
+    document.getElementById("hum").innerHTML  = "Umidità: " + d.umidita + " %";
+    document.getElementById("mq7").innerHTML  = "MQ7 RAW: " + d.mq7_raw;
+    document.getElementById("volt").innerHTML = "Volt: " + d.volt;
+    document.getElementById("ts").innerHTML   = "Aggiornamento: " + d.timestamp;
 
-    aggiorna();                  // subito
-    setInterval(aggiorna, 5000); // ogni 5 secondi
-  </script>
+  } catch(e) {
+    document.getElementById("ts").innerHTML = "ERRORE LETTURA DATI";
+  }
+}
+
+setInterval(aggiorna, 4000);
+aggiorna();
+</script>
 
 </body>
 </html>
